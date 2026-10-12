@@ -14,21 +14,7 @@ void Book::printShort() const {
 }
 
 bool Book::operator==(const Book& other) const { return id == other.id; }
-bool Book::operator!=(const Book& other) const { return id != other.id; }
 bool Book::operator<(const Book& other) const { return id < other.id; }
-
-ostream& operator<<(ostream& out, const Book& book) {
-    out << "ID: " << book.id << "\n";
-    out << "Название: " << book.title << "\n";
-    out << "Автор: " << book.author << "\n";
-    return out;
-}
-
-istream& operator>>(istream& in, Book& book) {
-    getline(in, book.title);
-    getline(in, book.author);
-    return in;
-}
 
 bool sameAuthor(const Book& a, const Book& b) {
     return a.author == b.author;
