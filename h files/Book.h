@@ -20,7 +20,6 @@ public:
     void printShort() const;
 
     bool operator==(const Book& other) const;   // равенство по id
-    bool operator!=(const Book& other) const;   // не равны по id
     bool operator<=(const Book& other) const;   // по году
     bool operator>(const Book& other) const;    // по году
 
