@@ -1,6 +1,5 @@
 #include "Branch.h"
 #include <iostream>
-
 using namespace std;
 
 Branch::Branch(const string& branchName, int branchCapacity)
@@ -45,7 +44,7 @@ void Branch::printCatalog() const {
     cout << "=== Филиал \"" << name << "\" (книг: " << catalog.size()
         << "/" << capacity << ") ===\n";
     if (catalog.empty()) {
-        cout << "  В филиале нет книг.\n";
+        cout << " В филиале нет книг.\n";
     }
     for (const Book& book : catalog) {
         book.printShort();
@@ -68,14 +67,28 @@ int Branch::printOtherBooksBySameAuthor(const Book& ref) const {
     return count;
 }
 
-const Book* Branch::newestBook() const {
-    const Book* newest = nullptr;
+int Branch::printBooksUpToYear(const Book& ref) const {
+    int count = 0;
     for (const Book& book : catalog) {
-        if (newest == nullptr || *newest < book) {
-            newest = &book;
+        if (book <= ref) {          // оператор <=
+            cout << name << ":";
+            book.printShort();
+            count++;
         }
     }
-    return newest;
+    return count;
+}
+
+int Branch::printBooksAfterYear(const Book& ref) const {
+    int count = 0;
+    for (const Book& book : catalog) {
+        if (book > ref) {           // оператор >
+            cout << name << ":";
+            book.printShort();
+            count++;
+        }
+    }
+    return count;
 }
 
 Branch& Branch::operator+=(const Book& book) {
