@@ -14,7 +14,6 @@ void Book::printShort() const {
 }
 
 bool Book::operator==(const Book& other) const { return id == other.id; }
-bool Book::operator!=(const Book& other) const { return !(*this == other); }
 bool Book::operator<=(const Book& other) const { return year <= other.year; }
 bool Book::operator>(const Book& other) const { return year > other.year; }
 
