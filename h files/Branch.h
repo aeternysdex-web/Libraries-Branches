@@ -24,10 +24,9 @@ public:
     void printCatalog() const;
     void printShort() const;
 
-
     int printOtherBooksBySameAuthor(const Book& ref) const;
-
-    const Book* newestBook() const;
+    int printBooksUpToYear(const Book& ref) const;    // год <= года образца
+    int printBooksAfterYear(const Book& ref) const;   // год >  года образца
 
     Branch& operator+=(const Book& book);
     Branch& operator-=(const Book& book);
