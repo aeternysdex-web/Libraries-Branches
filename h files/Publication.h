@@ -2,42 +2,42 @@
 #include <iostream>
 #include <string>
 
-class Book {
+class Publication {
 private:
     int id;
     std::string title;
-    std::string author;
+    std::string publisher;
     int year;
 
 public:
-    Book(int bookId, const std::string& bookTitle, const std::string& bookAuthor, int bookYear);
+    Publication(int publicationId, const std::string& publicationTitle, const std::string& publicationPublisher, int publicationYear);
 
     int getId() const;
     std::string getTitle() const;
-    std::string getAuthor() const;
+    std::string getPublisher() const;
     int getYear() const;
 
     void printShort() const;
 
-    bool operator==(const Book& other) const;  
-    bool operator<=(const Book& other) const;  
-    bool operator>(const Book& other) const;    
+    bool operator==(const Publication& other) const;
+    bool operator<=(const Publication& other) const;
+    bool operator>(const Publication& other) const;
 
-    friend std::ostream& operator<<(std::ostream& out, const Book& book) {
-        out << "ID: " << book.id << "\n";
-        out << "Название: " << book.title << "\n";
-        out << "Автор: " << book.author << "\n";
-        out << "Год: " << book.year << "\n";
+    friend std::ostream& operator<<(std::ostream& out, const Publication& publication) {
+        out << "ID: " << publication.id << "\n";
+        out << "Название: " << publication.title << "\n";
+        out << "Издательство: " << publication.publisher << "\n";
+        out << "Год: " << publication.year << "\n";
         return out;
     }
 
-    friend std::istream& operator>>(std::istream& in, Book& book) {
-        std::getline(in, book.title);
-        std::getline(in, book.author);
-        in >> book.year;
+    friend std::istream& operator>>(std::istream& in, Publication& publication) {
+        std::getline(in, publication.title);
+        std::getline(in, publication.publisher);
+        in >> publication.year;
         in.ignore(1000, '\n');
         return in;
     }
 
-    friend bool sameAuthor(const Book& a, const Book& b);
+    friend bool samePublisher(const Publication& a, const Publication& b);
 };
