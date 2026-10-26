@@ -6,10 +6,10 @@ Branch::Branch(const string& branchName, int branchCapacity)
     : name(branchName), capacity(branchCapacity) {}
 
 
-const Book* Branch::findBookById(int id) const {
-    for (const Book& book : catalog) {
-        if (book.getId() == id) {
-            return &book;
+const Publication* Branch::findPublicationById(int id) const {
+    for (const Publication& publication : catalog) {
+        if (publication.getId() == id) {
+            return &publication;
         }
     }
     return nullptr;
@@ -21,36 +21,36 @@ bool Branch::isFull() const {
 
 string Branch::getName() const { return name; }
 int Branch::getCapacity() const { return capacity; }
-int Branch::getBooksCount() const { return static_cast<int>(catalog.size()); }
+int Branch::getPublicationsCount() const { return static_cast<int>(catalog.size()); }
 
 void Branch::printCatalog() const {
-    cout << "=== Филиал \"" << name << "\" (книг: " << catalog.size()
+    cout << "=== Филиал \"" << name << "\" (изданий: " << catalog.size()
         << "/" << capacity << ") ===\n";
     if (catalog.empty()) {
-        cout << " В филиале нет книг.\n";
+        cout << " В филиале нет изданий.\n";
     }
-    for (const Book& book : catalog) {
-        book.printShort();
+    for (const Publication& publication : catalog) {
+        publication.printShort();
     }
 }
 
 void Branch::printShort() const {
-    cout << name << " (книг: " << catalog.size() << "/" << capacity << ")\n";
+    cout << name << " (изданий: " << catalog.size() << "/" << capacity << ")\n";
 }
 
-int Branch::printOtherBooksBySameAuthor(const Book& ref) const {
+int Branch::printOtherPublicationsBySamePublisher(const Publication& ref) const {
     int count = 0;
-    for (const Book& book : catalog) {
-        if (book != ref && sameAuthor(book, ref)) {
+    for (const Publication& publication : catalog) {
+        if (publication != ref && samePublisher(publication, ref)) {    //==
             cout << name << ":";
-            book.printShort();
+            publication.printShort();
             count++;
         }
     }
     return count;
 }
 
-int Branch::printBooksUpToYear(const Book& ref) const {
+int Branch::printPublicationsUpToYear(const Publication& ref) const {
     int count = 0;
     for (size_t i = 0; i < catalog.size(); ++i) {
         if (catalog[i] <= ref) {          // оператор <=
@@ -62,7 +62,7 @@ int Branch::printBooksUpToYear(const Book& ref) const {
     return count;
 }
 
-int Branch::printBooksAfterYear(const Book& ref) const {
+int Branch::printPublicationsAfterYear(const Publication& ref) const {
     int count = 0;
     for (size_t i = 0; i < catalog.size(); ++i) {
         if (catalog[i] > ref) {           // оператор >
@@ -74,24 +74,24 @@ int Branch::printBooksAfterYear(const Book& ref) const {
     return count;
 }
 
-Branch& Branch::operator+=(const Book& book) {
+Branch& Branch::operator+=(const Publication& publication) {
     if (isFull()) {
         cout << "Ошибка: филиал \"" << name << "\" переполнен.\n";
         return *this;
     }
-    catalog.push_back(book);
-    cout << "Книга \"" << book.getTitle() << "\" добавлена в филиал \"" << name << "\".\n";
+    catalog.push_back(publication);
+    cout << "Издание \"" << publication.getTitle() << "\" добавлено в филиал \"" << name << "\".\n";
     return *this;
 }
 
-Branch& Branch::operator-=(const Book& book) {
+Branch& Branch::operator-=(const Publication& publication) {
     for (size_t i = 0; i < catalog.size(); ++i) {
-        if (catalog[i] == book) {
+        if (catalog[i] == publication) {   // ==
             catalog.erase(catalog.begin() + i);
-            cout << "Книга \"" << book.getTitle() << "\" удалена из филиала \"" << name << "\".\n";
+            cout << "Издание \"" << publication.getTitle() << "\" удалено из филиала \"" << name << "\".\n";
             return *this;
         }
     }
-    cout << "Ошибка: такой книги нет в филиале \"" << name << "\".\n";
+    cout << "Ошибка: такого издания нет в филиале \"" << name << "\".\n";
     return *this;
 }
