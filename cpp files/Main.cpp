@@ -152,18 +152,12 @@ int main() {
     branches.emplace_back("Филиал №2", 5);
 
     int nextId = 1;
-    branches[0].addBook(Book(nextId, "Война и мир", "Л.Н. Толстой", 1869));
-    nextId++;
-    branches[0].addBook(Book(nextId, "Мастер и Маргарита", "М.А. Булгаков", 1967));
-    nextId++;
-    branches[1].addBook(Book(nextId, "Евгений Онегин", "А.С. Пушкин", 1833));
-    nextId++;
-    branches[1].addBook(Book(nextId, "Анна Каренина", "Л.Н. Толстой", 1877));
-    nextId++;
-    branches[1].addBook(Book(nextId, "Воскресение", "Л.Н. Толстой", 1899));
-    nextId++;
+    branches[0] += Book(nextId++, "Война и мир", "Л.Н. Толстой", 1869);
+    branches[0] += Book(nextId++, "Мастер и Маргарита", "М.А. Булгаков", 1967);
 
-    cout << "Загружены тестовые данные: 2 филиала.\n";
+    branches[1] += Book(nextId++, "Евгений Онегин", "А.С. Пушкин", 1833);
+    branches[1] += Book(nextId++, "Анна Каренина", "Л.Н. Толстой", 1877);
+    branches[1] += Book(nextId++, "Воскресение", "Л.Н. Толстой", 1899);
 
     int choice;
     do {
