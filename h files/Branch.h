@@ -12,8 +12,6 @@ private:
 public:
     Branch(const std::string& branchName, int branchCapacity);
 
-    bool addBook(const Book& book);
-    bool removeBookById(int id);
     const Book* findBookById(int id) const;
     bool isFull() const;
 
@@ -25,8 +23,8 @@ public:
     void printShort() const;
 
     int printOtherBooksBySameAuthor(const Book& ref) const;
-    int printBooksUpToYear(const Book& ref) const;    // год <= года образца
-    int printBooksAfterYear(const Book& ref) const;   // год >  года образца
+    int printBooksUpToYear(const Book& ref) const;    // год <= заданного
+    int printBooksAfterYear(const Book& ref) const;   // год > заданного
 
     Branch& operator+=(const Book& book);
     Branch& operator-=(const Book& book);
