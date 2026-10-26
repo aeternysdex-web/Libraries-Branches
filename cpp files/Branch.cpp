@@ -5,23 +5,6 @@ using namespace std;
 Branch::Branch(const string& branchName, int branchCapacity)
     : name(branchName), capacity(branchCapacity) {}
 
-bool Branch::addBook(const Book& book) {
-    if (isFull()) {
-        return false;
-    }
-    catalog.push_back(book);
-    return true;
-}
-
-bool Branch::removeBookById(int id) {
-    for (size_t i = 0; i < catalog.size(); ++i) {
-        if (catalog[i].getId() == id) {
-            catalog.erase(catalog.begin() + i);
-            return true;
-        }
-    }
-    return false;
-}
 
 const Book* Branch::findBookById(int id) const {
     for (const Book& book : catalog) {
@@ -69,10 +52,10 @@ int Branch::printOtherBooksBySameAuthor(const Book& ref) const {
 
 int Branch::printBooksUpToYear(const Book& ref) const {
     int count = 0;
-    for (const Book& book : catalog) {
-        if (book <= ref) {          // оператор <=
+    for (size_t i = 0; i < catalog.size(); ++i) {
+        if (catalog[i] <= ref) {          // оператор <=
             cout << name << ":";
-            book.printShort();
+            catalog[i].printShort();
             count++;
         }
     }
@@ -81,10 +64,10 @@ int Branch::printBooksUpToYear(const Book& ref) const {
 
 int Branch::printBooksAfterYear(const Book& ref) const {
     int count = 0;
-    for (const Book& book : catalog) {
-        if (book > ref) {           // оператор >
+    for (size_t i = 0; i < catalog.size(); ++i) {
+        if (catalog[i] > ref) {           // оператор >
             cout << name << ":";
-            book.printShort();
+            catalog[i].printShort();
             count++;
         }
     }
