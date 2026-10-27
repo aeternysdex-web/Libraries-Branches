@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 #include "Publication.h"
@@ -7,7 +8,7 @@ class Branch {
 private:
     std::string name;
     int capacity;
-    std::vector<Publication> catalog;
+    std::vector<std::unique_ptr<Publication>> catalog;
 
 public:
     Branch(const std::string& branchName, int branchCapacity);
@@ -23,9 +24,9 @@ public:
     void printShort() const;
 
     int printOtherPublicationsBySamePublisher(const Publication& ref) const;
-    int printPublicationsUpToYear(const Publication& ref) const;    // год <= заданного
-    int printPublicationsAfterYear(const Publication& ref) const;   // год > заданного
+    int printPublicationsUpToYear(const Publication& ref) const;    
+    int printPublicationsAfterYear(const Publication& ref) const;   
 
-    Branch& operator+=(const Publication& publication);
+    Branch& operator+=(std::unique_ptr<Publication> publication);
     Branch& operator-=(const Publication& publication);
 };
