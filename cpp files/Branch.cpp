@@ -7,9 +7,9 @@ Branch::Branch(const string& branchName, int branchCapacity)
 
 
 const Publication* Branch::findPublicationById(int id) const {
-    for (const Publication& publication : catalog) {
-        if (publication.getId() == id) {
-            return &publication;
+    for (const unique_ptr<Publication>& publication : catalog) {
+        if (publication->getId() == id) {
+            return publication.get();   
         }
     }
     return nullptr;
@@ -29,8 +29,8 @@ void Branch::printCatalog() const {
     if (catalog.empty()) {
         cout << " В филиале нет изданий.\n";
     }
-    for (const Publication& publication : catalog) {
-        publication.printShort();
+    for (const unique_ptr<Publication>& publication : catalog) {
+        publication->printShort();  
     }
 }
 
@@ -40,10 +40,10 @@ void Branch::printShort() const {
 
 int Branch::printOtherPublicationsBySamePublisher(const Publication& ref) const {
     int count = 0;
-    for (const Publication& publication : catalog) {
-        if (publication != ref && samePublisher(publication, ref)) {    //==
+    for (const unique_ptr<Publication>& publication : catalog) {
+        if (*publication != ref && samePublisher(*publication, ref)) {
             cout << name << ":";
-            publication.printShort();
+            publication->printShort();
             count++;
         }
     }
@@ -53,9 +53,9 @@ int Branch::printOtherPublicationsBySamePublisher(const Publication& ref) const 
 int Branch::printPublicationsUpToYear(const Publication& ref) const {
     int count = 0;
     for (size_t i = 0; i < catalog.size(); ++i) {
-        if (catalog[i] <= ref) {          // оператор <=
+        if (*catalog[i] <= ref) {          // оператор <=
             cout << name << ":";
-            catalog[i].printShort();
+            catalog[i]->printShort();
             count++;
         }
     }
@@ -65,30 +65,31 @@ int Branch::printPublicationsUpToYear(const Publication& ref) const {
 int Branch::printPublicationsAfterYear(const Publication& ref) const {
     int count = 0;
     for (size_t i = 0; i < catalog.size(); ++i) {
-        if (catalog[i] > ref) {           // оператор >
+        if (*catalog[i] > ref) {           // оператор >
             cout << name << ":";
-            catalog[i].printShort();
+            catalog[i]->printShort();
             count++;
         }
     }
     return count;
 }
 
-Branch& Branch::operator+=(const Publication& publication) {
+Branch& Branch::operator+=(unique_ptr<Publication> publication) {
     if (isFull()) {
         cout << "Ошибка: филиал \"" << name << "\" переполнен.\n";
         return *this;
     }
-    catalog.push_back(publication);
-    cout << "Издание \"" << publication.getTitle() << "\" добавлено в филиал \"" << name << "\".\n";
+    cout << "Издание \"" << publication->getTitle() << "\" добавлено в филиал \"" << name << "\".\n";
+    catalog.push_back(std::move(publication));   
     return *this;
 }
 
 Branch& Branch::operator-=(const Publication& publication) {
     for (size_t i = 0; i < catalog.size(); ++i) {
-        if (catalog[i] == publication) {   // ==
-            catalog.erase(catalog.begin() + i);
-            cout << "Издание \"" << publication.getTitle() << "\" удалено из филиала \"" << name << "\".\n";
+        if (*catalog[i] == publication) {
+            string title = catalog[i]->getTitle();
+            catalog.erase(catalog.begin() + i);   
+            cout << "Издание \"" << title << "\" удалено из филиала \"" << name << "\".\n";
             return *this;
         }
     }
