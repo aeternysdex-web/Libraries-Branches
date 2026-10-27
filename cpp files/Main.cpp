@@ -1,7 +1,11 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
+#include "Publication.h"
 #include "Book.h"
+#include "Magazine.h"
+#include "Newspaper.h"
 #include "Branch.h"
 using namespace std;
 
@@ -13,6 +17,13 @@ int readInt(const string& prompt) {
     return number;
 }
 
+string readLine(const string& prompt) {
+    cout << prompt;
+    string text;
+    getline(cin, text);
+    return text;
+}
+
 void printBranches(const vector<Branch>& branches) {
     for (size_t i = 0; i < branches.size(); ++i) {
         cout << i + 1 << ". ";
@@ -20,11 +31,11 @@ void printBranches(const vector<Branch>& branches) {
     }
 }
 
-const Book* findBook(const vector<Branch>& branches, int id) {
+const Publication* findPublication(const vector<Branch>& branches, int id) {
     for (const Branch& branch : branches) {
-        const Book* book = branch.findBookById(id);
-        if (book != nullptr) {
-            return book;
+        const Publication* publication = branch.findPublicationById(id);
+        if (publication != nullptr) {
+            return publication;
         }
     }
     return nullptr;
@@ -36,21 +47,54 @@ void showBranches(const vector<Branch>& branches) {
     }
 }
 
-void showBookInfo(const vector<Branch>& branches) {
+void showPublicationInfo(const vector<Branch>& branches) {
     showBranches(branches);
-    int id = readInt("Введите ID книги: ");
-    const Book* book = findBook(branches, id);
-    if (book == nullptr) {
-        cout << "Книга с таким ID не найдена.\n";
+    int id = readInt("Введите ID издания: ");
+    const Publication* publication = findPublication(branches, id);
+    if (publication == nullptr) {
+        cout << "Издание с таким ID не найдено.\n";
         return;
     }
-    cout << *book; // оператор <<
+    cout << *publication; 
 }
 
-void addBook(vector<Branch>& branches, int& nextId) {
-    Book book(nextId, "", "", 0);
-    cout << "Введите название, автора и год издания (каждое с новой строки):\n";
-    cin >> book; // оператор >>
+void addPublication(vector<Branch>& branches, int& nextId) {
+    cout << "Какой тип издания добавить?\n";
+    cout << "1. Книга\n2. Журнал\n3. Газета\n4. Обычное издание\n";
+    int type = readInt("Тип: ");
+    if (type < 1 || type > 4) {
+        cout << "Некорректный тип.\n";
+        return;
+    }
+
+    Publication common(nextId, "", "", 0);
+    cout << "Введите название, издательство и год издания (каждое с новой строки):\n";
+    cin >> common; // оператор >>
+
+    unique_ptr<Publication> publication;
+    if (type == 1) {
+        string author = readLine("Автор: ");
+        int pages = readInt("Количество страниц: ");
+        string genre = readLine("Жанр: ");
+        publication = make_unique<Book>(nextId, common.getTitle(), common.getPublisher(),
+            common.getYear(), author, pages, genre);
+    }
+    else if (type == 2) {
+        int issue = readInt("Номер выпуска: ");
+        string topic = readLine("Тематика: ");
+        publication = make_unique<Magazine>(nextId, common.getTitle(), common.getPublisher(),
+            common.getYear(), issue, topic);
+    }
+    else if (type == 3) {
+        int circulation = readInt("Тираж: ");
+        string city = readLine("Город выпуска: ");
+        publication = make_unique<Newspaper>(nextId, common.getTitle(), common.getPublisher(),
+            common.getYear(), circulation, city);
+    }
+    else {
+        publication = make_unique<Publication>(nextId, common.getTitle(), common.getPublisher(),
+            common.getYear());
+    }
 
     cout << "В какой филиал добавить?\n";
     printBranches(branches);
@@ -64,84 +108,84 @@ void addBook(vector<Branch>& branches, int& nextId) {
         cout << "Филиал \"" << branches[index].getName() << "\" переполнен.\n";
         return;
     }
-    branches[index] += book; // оператор +=
+    branches[index] += std::move(publication); // оператор +=
     nextId++;
 }
 
-void deleteBook(vector<Branch>& branches) {
+void deletePublication(vector<Branch>& branches) {
     printBranches(branches);
-    int choice = readInt("Из какого филиала удалить книгу: ");
+    int choice = readInt("Из какого филиала удалить издание: ");
     if (choice < 1 || choice > static_cast<int>(branches.size())) {
         cout << "Некорректный номер.\n";
         return;
     }
     int index = choice - 1;
     branches[index].printCatalog();
-    int id = readInt("Введите ID книги для удаления: ");
-    const Book* book = findBook(branches, id);
-    if (book == nullptr) {
-        cout << "Книга с таким ID не найдена.\n";
+    int id = readInt("Введите ID издания для удаления: ");
+    const Publication* publication = findPublication(branches, id);
+    if (publication == nullptr) {
+        cout << "Издание с таким ID не найдено.\n";
         return;
     }
-    Book copy = *book;
+    Publication copy = *publication; 
     branches[index] -= copy; // оператор -=
 }
 
-void showSameAuthor(const vector<Branch>& branches) {
+void showSamePublisher(const vector<Branch>& branches) {
     showBranches(branches);
-    int id = readInt("Введите ID книги: ");
-    const Book* book = findBook(branches, id);
-    if (book == nullptr) {
-        cout << "Книга с таким ID не найдена.\n";
+    int id = readInt("Введите ID издания: ");
+    const Publication* publication = findPublication(branches, id);
+    if (publication == nullptr) {
+        cout << "Издание с таким ID не найдено.\n";
         return;
     }
-    cout << "Другие книги автора " << book->getAuthor() << ":\n";
+    cout << "Другие издания издательства " << publication->getPublisher() << ":\n";
     int total = 0;
     for (const Branch& branch : branches) {
-        total += branch.printOtherBooksBySameAuthor(*book);
+        total += branch.printOtherPublicationsBySamePublisher(*publication);
     }
     if (total == 0) {
-        cout << " Других книг этого автора нет.\n";
+        cout << " Других изданий этого издательства нет.\n";
     }
 }
 
 void showUpToYear(const vector<Branch>& branches) {
     int year = readInt("Введите год: ");
-    Book ref(0, "", "", year);
+    Publication ref(0, "", "", year);
 
     int total = 0;
     for (const Branch& branch : branches) {
-        total += branch.printBooksUpToYear(ref);
+        total += branch.printPublicationsUpToYear(ref);
     }
 
     if (total == 0) {
-        cout << "Таких книг нет.\n";
+        cout << "Таких изданий нет.\n";
     }
 }
 
 void showAfterYear(const vector<Branch>& branches) {
     int year = readInt("Введите год: ");
-    Book ref(0, "", "", year);
+    Publication ref(0, "", "", year);
 
     int total = 0;
     for (const Branch& branch : branches) {
-        total += branch.printBooksAfterYear(ref);
+        total += branch.printPublicationsAfterYear(ref);
     }
 
     if (total == 0) {
-        cout << "Таких книг нет.\n";
+        cout << "Таких изданий нет.\n";
     }
 }
 
 void printMenu() {
     cout << "\n========== Сеть библиотек ==========\n";
-    cout << "1. Показать филиалы и книги в них\n";
-    cout << "2. Информация о книге\n";
-    cout << "3. Добавить книгу\n";
-    cout << "4. Удалить книгу\n";
-    cout << "5. Другие книги того же автора\n";
-    cout << "6. Книги, изданные в указанном году и раньше (<=)\n";
-    cout << "7. Книги, изданные после указанного года (>)\n";
+    cout << "1. Показать филиалы и издания в них\n";
+    cout << "2. Информация об издании\n";
+    cout << "3. Добавить издание\n";
+    cout << "4. Удалить издание\n";
+    cout << "5. Другие издания того же издательства\n";
+    cout << "6. Издания, вышедшие в указанном году и раньше\n";
+    cout << "7. Издания, вышедшие после указанного года\n";
     cout << "0. Выход\n";
     cout << "=====================================\n";
 }
@@ -152,12 +196,13 @@ int main() {
     branches.emplace_back("Филиал №2", 5);
 
     int nextId = 1;
-    branches[0] += Book(nextId++, "Война и мир", "Л.Н. Толстой", 1869);
-    branches[0] += Book(nextId++, "Мастер и Маргарита", "М.А. Булгаков", 1967);
+    branches[0] += make_unique<Book>(nextId++, "Война и мир", "Азбука", 1869, "Л.Н. Толстой", 1300, "роман");
+    branches[0] += make_unique<Book>(nextId++, "Мастер и Маргарита", "Эксмо", 1967, "М.А. Булгаков", 480, "роман");
+    branches[0] += make_unique<Magazine>(nextId++, "Наука и жизнь", "Правда", 2023, 5, "наука");
 
-    branches[1] += Book(nextId++, "Евгений Онегин", "А.С. Пушкин", 1833);
-    branches[1] += Book(nextId++, "Анна Каренина", "Л.Н. Толстой", 1877);
-    branches[1] += Book(nextId++, "Воскресение", "Л.Н. Толстой", 1899);
+    branches[1] += make_unique<Book>(nextId++, "Евгений Онегин", "Азбука", 1833, "А.С. Пушкин", 240, "роман в стихах");
+    branches[1] += make_unique<Newspaper>(nextId++, "Вечерний Минск", "Минская правда", 2024, 25000, "Минск");
+    branches[1] += make_unique<Publication>(nextId++, "Справочник библиотекаря", "Эксмо", 2010);
 
     int choice;
     do {
@@ -165,10 +210,10 @@ int main() {
         choice = readInt("Выберите пункт меню: ");
         switch (choice) {
         case 1: showBranches(branches); break;
-        case 2: showBookInfo(branches); break;
-        case 3: addBook(branches, nextId); break;
-        case 4: deleteBook(branches); break;
-        case 5: showSameAuthor(branches); break;
+        case 2: showPublicationInfo(branches); break;
+        case 3: addPublication(branches, nextId); break;
+        case 4: deletePublication(branches); break;
+        case 5: showSamePublisher(branches); break;
         case 6: showUpToYear(branches); break;
         case 7: showAfterYear(branches); break;
         case 0: cout << "Завершение работы.\n"; break;
