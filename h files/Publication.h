@@ -12,22 +12,22 @@ private:
 public:
     Publication(int publicationId, const std::string& publicationTitle, const std::string& publicationPublisher, int publicationYear);
 
+    virtual ~Publication() = default;
+
     int getId() const;
     std::string getTitle() const;
     std::string getPublisher() const;
     int getYear() const;
 
-    void printShort() const;
+    virtual void printShort() const;                 
+    virtual void print(std::ostream& out) const;      
 
     bool operator==(const Publication& other) const;
     bool operator<=(const Publication& other) const;
     bool operator>(const Publication& other) const;
 
     friend std::ostream& operator<<(std::ostream& out, const Publication& publication) {
-        out << "ID: " << publication.id << "\n";
-        out << "Название: " << publication.title << "\n";
-        out << "Издательство: " << publication.publisher << "\n";
-        out << "Год: " << publication.year << "\n";
+        publication.print(out);
         return out;
     }
 
