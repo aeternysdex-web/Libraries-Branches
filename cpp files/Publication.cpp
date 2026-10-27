@@ -13,6 +13,13 @@ void Publication::printShort() const {
     cout << " ID " << id << ": \"" << title << "\", " << publisher << ", " << year << " г.\n";
 }
 
+void Publication::print(ostream& out) const {
+    out << "ID: " << id << "\n";
+    out << "Название: " << title << "\n";
+    out << "Издательство: " << publisher << "\n";
+    out << "Год: " << year << "\n";
+}
+
 bool Publication::operator==(const Publication& other) const { return id == other.id; }
 bool Publication::operator<=(const Publication& other) const { return year <= other.year; }
 bool Publication::operator>(const Publication& other) const { return year > other.year; }
