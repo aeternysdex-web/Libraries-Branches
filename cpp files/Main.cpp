@@ -6,7 +6,6 @@
 #include "LibraryItem.h"
 #include "Magazine.h"
 #include "Newspaper.h"
-
 using namespace std;
 const int CURRENT_YEAR = 2026;
 int readInt(const string& prompt) {
@@ -103,16 +102,19 @@ Magazine* findMagazine(vector<Branch>& branches, int id) {
 }
 
 void printFullInfo(vector<Branch>& branches, int id) {
-    if (Book* book = findBook(branches, id)) {
+    if (const Book* book = findBook(branches, id)) {
         cout << "Тип: " << book->getType() << "\n" << *book;
         printSpecific(*book);
-    } else if (Newspaper* paper = findNewspaper(branches, id)) {
+    }
+    else if (const Newspaper* paper = findNewspaper(branches, id)) {
         cout << "Тип: " << paper->getType() << "\n" << *paper;
         printSpecific(*paper);
-    } else if (Magazine* magazine = findMagazine(branches, id)) {
+    }
+    else if (const Magazine* magazine = findMagazine(branches, id)) {
         cout << "Тип: " << magazine->getType() << "\n" << *magazine;
         printSpecific(*magazine);
-    } else {
+    }
+    else {
         cout << "Издание с таким ID не найдено.\n";
     }
 }
@@ -145,14 +147,16 @@ void addItem(vector<Branch>& branches, int& nextId) {
     if (type == 1) {
         Book book(nextId, "", 0, "", "", 0);
         cin >> book;                 
-        readSpecific(book);    
-        branches[index] += book;    
-    } else if (type == 2) {
+        readSpecific(book);    // собственные поля через сеттеры
+        branches[index] += book;     
+    }
+    else if (type == 2) {
         Newspaper paper(nextId, "", 0, 0, 0, "");
         cin >> paper;
         readSpecific(paper);
         branches[index] += paper;
-    } else {
+    }
+    else {
         Magazine magazine(nextId, "", 0, "", 0, "");
         cin >> magazine;
         readSpecific(magazine);
@@ -170,12 +174,12 @@ void deleteItem(vector<Branch>& branches) {
     int index = choice - 1;
     branches[index].printCatalog();
     int id = readInt("Введите ID издания для удаления: ");
-    branches[index] -= id;   
+    branches[index] -= id;  
 }
 void showSameAuthor(vector<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID книги: ");
-    Book* book = findBook(branches, id);
+    const Book* book = findBook(branches, id);
     if (book == nullptr) {
         cout << "Книга с таким ID не найдена (автор есть только у книг).\n";
         return;
@@ -222,7 +226,7 @@ void showLoanTerms(const vector<Branch>& branches) {
 void useBookMethod(vector<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID книги: ");
-    Book* book = findBook(branches, id);
+    const Book* book = findBook(branches, id);
     if (book == nullptr) {
         cout << "Книга с таким ID не найдена.\n";
         return;
@@ -230,7 +234,8 @@ void useBookMethod(vector<Branch>& branches) {
     int pages = readInt("Сколько страниц в день читает читатель: ");
     if (book->canFinishInLoanPeriod(pages)) {
         cout << "Читатель успеет дочитать книгу за срок выдачи (" << book->getLoanDays() << " дн.).\n";
-    } else {
+    }
+    else {
         cout << "Читатель НЕ успеет дочитать книгу за срок выдачи (" << book->getLoanDays() << " дн.).\n";
     }
 }
@@ -238,14 +243,15 @@ void useBookMethod(vector<Branch>& branches) {
 void useNewspaperMethod(vector<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID газеты: ");
-    Newspaper* paper = findNewspaper(branches, id);
+    const Newspaper* paper = findNewspaper(branches, id);
     if (paper == nullptr) {
         cout << "Газета с таким ID не найдена.\n";
         return;
     }
     if (paper->canTakeHome(CURRENT_YEAR)) {
         cout << "Номер можно взять домой.\n";
-    } else {
+    }
+    else {
         cout << "Номер домой брать нельзя (маленький тираж и/или старше 15 лет).\n";
     }
 }
@@ -253,7 +259,7 @@ void useNewspaperMethod(vector<Branch>& branches) {
 void useMagazineMethod(vector<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID журнала: ");
-    Magazine* magazine = findMagazine(branches, id);
+    const Magazine* magazine = findMagazine(branches, id);
     if (magazine == nullptr) {
         cout << "Журнал с таким ID не найден.\n";
         return;
@@ -263,7 +269,8 @@ void useMagazineMethod(vector<Branch>& branches) {
     getline(cin, audience);
     if (magazine->suitableFor(audience)) {
         cout << "Журнал подходит для этой аудитории.\n";
-    } else {
+    }
+    else {
         cout << "Журнал не подходит для этой аудитории.\n";
     }
 }
@@ -308,7 +315,7 @@ void useInheritedSetter(vector<Branch>& branches) {
     cout << "Новое название: ";
     string title;
     getline(cin, title);
-    item->setTitle(title); 
+    item->setTitle(title);  
     cout << "\nПосле изменения:\n";
     printFullInfo(branches, id);
 }
@@ -356,23 +363,23 @@ int main() {
         printMenu();
         choice = readInt("Выберите пункт меню: ");
         switch (choice) {
-            case 1: showBranches(branches); break;
-            case 2: showItemInfo(branches); break;
-            case 3: addItem(branches, nextId); break;
-            case 4: deleteItem(branches); break;
-            case 5: showSameAuthor(branches); break;
-            case 6: showUpToYear(branches); break;
-            case 7: showAfterYear(branches); break;
-            case 8: showLoanTerms(branches); break;
-            case 9: useBookMethod(branches); break;
-            case 10: useNewspaperMethod(branches); break;
-            case 11: useMagazineMethod(branches); break;
-            case 12: showInheritedFields(branches); break;
-            case 13: showSpecificFields(branches); break;
-            case 14: useInheritedSetter(branches); break;
-            case 15: useInheritedGetters(branches); break;
-            case 0: cout << "Завершение работы.\n"; break;
-            default: cout << "Такого пункта меню нет.\n";
+        case 1: showBranches(branches); break;
+        case 2: showItemInfo(branches); break;
+        case 3: addItem(branches, nextId); break;
+        case 4: deleteItem(branches); break;
+        case 5: showSameAuthor(branches); break;
+        case 6: showUpToYear(branches); break;
+        case 7: showAfterYear(branches); break;
+        case 8: showLoanTerms(branches); break;
+        case 9: useBookMethod(branches); break;
+        case 10: useNewspaperMethod(branches); break;
+        case 11: useMagazineMethod(branches); break;
+        case 12: showInheritedFields(branches); break;
+        case 13: showSpecificFields(branches); break;
+        case 14: useInheritedSetter(branches); break;
+        case 15: useInheritedGetters(branches); break;
+        case 0: cout << "Завершение работы.\n"; break;
+        default: cout << "Такого пункта меню нет.\n";
         }
     } while (choice != 0);
     return 0;
