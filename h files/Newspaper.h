@@ -10,14 +10,14 @@ private:
 public:
     Newspaper(int paperId, const std::string& paperTitle, int paperYear,
               int paperIssueNumber, int paperCirculation, const std::string& paperPublisher);
-    ~Newspaper() override;
+    ~Newspaper() override = default;
 
     int getIssueNumber() const;
     int getCirculation() const;
     std::string getPublisher() const;
     void setIssueNumber(int newIssueNumber);
     void setCirculation(int newCirculation);
-    void setPublisher(const std::string& newPublisher);
+    void setPublisher(std::string_view newPublisher);
 
     std::string getType() const override;
     int getLoanDays() const override;
