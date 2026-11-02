@@ -1,20 +1,25 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include "Publication.h"
+#include "LibraryItem.h"
 
-class Magazine : public Publication {
+class Magazine : public LibraryItem {
 private:
-    int issueNumber;
     std::string topic;
+    int issueNumber;
+    std::string targetAudience;
 
 public:
-    Magazine(int magazineId, const std::string& magazineTitle, const std::string& magazinePublisher,
-        int magazineYear, int magazineIssueNumber, const std::string& magazineTopic);
+    Magazine(int magId, const std::string& magTitle, int magYear,
+             const std::string& magTopic, int magIssueNumber, const std::string& magTargetAudience);
+    ~Magazine() override;
 
-    int getIssueNumber() const;
     std::string getTopic() const;
+    int getIssueNumber() const;
+    std::string getTargetAudience() const;
+    void setTopic(const std::string& newTopic);
+    void setIssueNumber(int newIssueNumber);
+    void setTargetAudience(const std::string& newTargetAudience);
 
-    void printShort() const override;
-    void print(std::ostream& out) const override;
+    std::string getType() const override;
+    int getLoanDays() const override;
+    bool suitableFor(const std::string& audience) const;
 };
