@@ -7,14 +7,12 @@ Newspaper::Newspaper(int paperId, const string& paperTitle, int paperYear,
       issueNumber(paperIssueNumber), circulation(paperCirculation), publisher(paperPublisher) {
 }
 
-Newspaper::~Newspaper() {}
-
 int Newspaper::getIssueNumber() const { return issueNumber; }
 int Newspaper::getCirculation() const { return circulation; }
 string Newspaper::getPublisher() const { return publisher; }
 void Newspaper::setIssueNumber(int newIssueNumber) { issueNumber = newIssueNumber; }
 void Newspaper::setCirculation(int newCirculation) { circulation = newCirculation; }
-void Newspaper::setPublisher(const string& newPublisher) { publisher = newPublisher; }
+void Newspaper::setPublisher(string_view newPublisher) { publisher = newPublisher; }
 
 string Newspaper::getType() const { return "Газета"; }
 int Newspaper::getLoanDays() const { return 3; }
