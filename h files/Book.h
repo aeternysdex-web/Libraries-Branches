@@ -10,13 +10,13 @@ private:
 public:
     Book(int bookId, const std::string& bookTitle, int bookYear,
          const std::string& bookAuthor, const std::string& bookGenre, int bookPageCount);
-    ~Book() override;
+    ~Book() override = default;
 
     std::string getAuthor() const;
     std::string getGenre() const;
     int getPageCount() const;
-    void setAuthor(const std::string& newAuthor);
-    void setGenre(const std::string& newGenre);
+    void setAuthor(std::string_view newAuthor);
+    void setGenre(std::string_view newGenre);
     void setPageCount(int newPageCount);
 
     std::string getType() const override;
