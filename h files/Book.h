@@ -1,22 +1,28 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include "Publication.h"
+#include "LibraryItem.h"
 
-class Book : public Publication {
+class Book : public LibraryItem {
 private:
     std::string author;
-    int pages;
     std::string genre;
+    int pageCount;
 
 public:
-    Book(int bookId, const std::string& bookTitle, const std::string& bookPublisher, int bookYear,
-        const std::string& bookAuthor, int bookPages, const std::string& bookGenre);
+    Book(int bookId, const std::string& bookTitle, int bookYear,
+         const std::string& bookAuthor, const std::string& bookGenre, int bookPageCount);
+    ~Book() override;
 
     std::string getAuthor() const;
-    int getPages() const;
     std::string getGenre() const;
+    int getPageCount() const;
+    void setAuthor(const std::string& newAuthor);
+    void setGenre(const std::string& newGenre);
+    void setPageCount(int newPageCount);
 
-    void printShort() const override;
-    void print(std::ostream& out) const override;
+    std::string getType() const override;
+    int getLoanDays() const override;
+    bool canFinishInLoanPeriod(int pagesPerDay) const;
+    friend bool sameAuthor(const Book& a, const Book& b);
 };
+
+bool sameAuthor(const Book& a, const Book& b);
