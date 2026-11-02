@@ -1,22 +1,24 @@
 #include "Magazine.h"
 using namespace std;
 
-Magazine::Magazine(int magazineId, const string& magazineTitle, const string& magazinePublisher,
-    int magazineYear, int magazineIssueNumber, const string& magazineTopic)
-    : Publication(magazineId, magazineTitle, magazinePublisher, magazineYear),
-    issueNumber(magazineIssueNumber), topic(magazineTopic) {}
-
-int Magazine::getIssueNumber() const { return issueNumber; }
-string Magazine::getTopic() const { return topic; }
-
-void Magazine::printShort() const {
-    Publication::printShort();
-    cout << "    Журнал: выпуск №" << issueNumber << ", тематика: " << topic << "\n";
+Magazine::Magazine(int magId, const string& magTitle, int magYear,
+                   const string& magTopic, int magIssueNumber, const string& magTargetAudience)
+    : LibraryItem(magId, magTitle, magYear),
+      topic(magTopic), issueNumber(magIssueNumber), targetAudience(magTargetAudience) {
 }
 
-void Magazine::print(ostream& out) const {
-    Publication::print(out);
-    out << "Тип: журнал\n";
-    out << "Номер выпуска: " << issueNumber << "\n";
-    out << "Тематика: " << topic << "\n";
+Magazine::~Magazine() {}
+
+string Magazine::getTopic() const { return topic; }
+int Magazine::getIssueNumber() const { return issueNumber; }
+string Magazine::getTargetAudience() const { return targetAudience; }
+void Magazine::setTopic(const string& newTopic) { topic = newTopic; }
+void Magazine::setIssueNumber(int newIssueNumber) { issueNumber = newIssueNumber; }
+void Magazine::setTargetAudience(const string& newTargetAudience) { targetAudience = newTargetAudience; }
+
+string Magazine::getType() const { return "Журнал"; }
+int Magazine::getLoanDays() const { return 7; }
+
+bool Magazine::suitableFor(const string& audience) const {
+    return targetAudience == audience;
 }
