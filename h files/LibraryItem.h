@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <string_view>
+#include <compare>
 
 inline int readNumber(std::istream& in) {
     int n = 0;
@@ -20,12 +22,12 @@ private:
 
 public:
     LibraryItem(int itemId, const std::string& itemTitle, int itemYear);
-    virtual ~LibraryItem();
+    virtual ~LibraryItem() = default;
 
     int getId() const;
     std::string getTitle() const;
     int getYear() const;
-    void setTitle(const std::string& newTitle);
+    void setTitle(std::string_view newTitle);
     void setYear(int newYear);
 
     virtual std::string getType() const;
@@ -33,13 +35,17 @@ public:
     void printInfo(std::ostream& out) const;
     void readFrom(std::istream& in);
 
-    bool operator==(const LibraryItem& other) const;
-    bool operator!=(const LibraryItem& other) const;
-    bool operator<(const LibraryItem& other) const;
-    bool operator>(const LibraryItem& other) const;
-    bool operator<=(const LibraryItem& other) const;
-    bool operator>=(const LibraryItem& other) const;
-};
 
-std::ostream& operator<<(std::ostream& out, const LibraryItem& item);
-std::istream& operator>>(std::istream& in, LibraryItem& item);
+    bool operator==(const LibraryItem& other) const;
+
+    std::strong_ordering operator<=>(const LibraryItem& other) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const LibraryItem& item) {
+        item.printInfo(out);
+        return out;
+    }
+    friend std::istream& operator>>(std::istream& in, LibraryItem& item) {
+        item.readFrom(in);
+        return in;
+    }
+};
