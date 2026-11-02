@@ -7,13 +7,11 @@ Book::Book(int bookId, const string& bookTitle, int bookYear,
       author(bookAuthor), genre(bookGenre), pageCount(bookPageCount) {
 }
 
-Book::~Book() {}
-
 string Book::getAuthor() const { return author; }
 string Book::getGenre() const { return genre; }
 int Book::getPageCount() const { return pageCount; }
-void Book::setAuthor(const string& newAuthor) { author = newAuthor; }
-void Book::setGenre(const string& newGenre) { genre = newGenre; }
+void Book::setAuthor(string_view newAuthor) { author = newAuthor; }
+void Book::setGenre(string_view newGenre) { genre = newGenre; }
 void Book::setPageCount(int newPageCount) { pageCount = newPageCount; }
 
 string Book::getType() const { return "Книга"; }
