@@ -10,16 +10,16 @@ private:
 public:
     Magazine(int magId, const std::string& magTitle, int magYear,
              const std::string& magTopic, int magIssueNumber, const std::string& magTargetAudience);
-    ~Magazine() override;
+    ~Magazine() override = default;
 
     std::string getTopic() const;
     int getIssueNumber() const;
     std::string getTargetAudience() const;
-    void setTopic(const std::string& newTopic);
+    void setTopic(std::string_view newTopic);
     void setIssueNumber(int newIssueNumber);
-    void setTargetAudience(const std::string& newTargetAudience);
+    void setTargetAudience(std::string_view newTargetAudience);
 
     std::string getType() const override;
     int getLoanDays() const override;
-    bool suitableFor(const std::string& audience) const;
+    bool suitableFor(std::string_view audience) const;
 };
