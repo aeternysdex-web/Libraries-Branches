@@ -1,4 +1,5 @@
 #include "Magazine.h"
+#include <array>
 using namespace std;
 
 Magazine::Magazine(int magId, const string& magTitle, int magYear,
@@ -53,7 +54,7 @@ bool Magazine::suitableFor(string_view audience) const {
 }
 
 string Magazine::chooseAudience(istream& in) {
-    const string audiences[4] = { "дети", "подростки", "взрослые", "пенсионеры" };
+    const array<string, 4> audiences = { "дети", "подростки", "взрослые", "пенсионеры" };
     cout << "Целевая аудитория:\n";
     for (int i = 0; i < 4; ++i) {
         cout << "  " << i + 1 << ". " << audiences[i] << "\n";
