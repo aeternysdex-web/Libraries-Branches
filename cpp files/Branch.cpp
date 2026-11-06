@@ -11,7 +11,7 @@ void Branch::printLine(const LibraryItem& item) const {
 }
 
 LibraryItem* Branch::findItemById(int id) {
-    for (std::unique_ptr<LibraryItem>& item : items) {
+    for (const auto& item : items) {
         if (item->getId() == id) return item.get(); 
     }
     return nullptr;
