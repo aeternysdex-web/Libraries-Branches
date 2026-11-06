@@ -8,9 +8,7 @@ int LibraryItem::getId() const { return id; }
 string LibraryItem::getTitle() const { return title; }
 int LibraryItem::getYear() const { return year; }
 void LibraryItem::setTitle(string_view newTitle) { title = newTitle; }
-void LibraryItem::setYear(int newYear) { year = newYear; }
 
-string LibraryItem::getType() const { return "Издание"; }
 int LibraryItem::getLoanDays() const { return 14; }
 
 void LibraryItem::printInfo(ostream& out) const {
