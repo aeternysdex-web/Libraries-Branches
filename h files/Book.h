@@ -9,20 +9,21 @@ private:
 
 public:
     Book(int bookId, const std::string& bookTitle, int bookYear,
-         const std::string& bookAuthor, const std::string& bookGenre, int bookPageCount);
+        const std::string& bookAuthor, const std::string& bookGenre, int bookPageCount);
     ~Book() override = default;
 
     std::string getAuthor() const;
     std::string getGenre() const;
     int getPageCount() const;
-    void setAuthor(std::string_view newAuthor);
-    void setGenre(std::string_view newGenre);
-    void setPageCount(int newPageCount);
 
     std::string getType() const override;
     int getLoanDays() const override;
-    bool canFinishInLoanPeriod(int pagesPerDay) const;
-    friend bool sameAuthor(const Book& a, const Book& b);
+    void printInfo(std::ostream& out) const override;
+    void readFrom(std::istream& in) override;
+    double calculateLossCost(int currentYear, std::ostream& out) const override;
+
+    bool canFinishInLoanPeriod(int pagesPerDay) const; 
+
+
 };
 
-bool sameAuthor(const Book& a, const Book& b);
