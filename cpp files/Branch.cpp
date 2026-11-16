@@ -126,7 +126,7 @@ Branch& Branch::operator+=(const Book& book) {
         cout << "Ошибка: филиал \"" << name << "\" переполнен.\n";
         return *this;
     }
-    books.add(new Book(book)); 
+    books.add(make_unique<Book>(book)); 
     cout << "Добавлено: [" << book.getType() << "] \"" << book.getTitle() << "\" в филиал \"" << name << "\".\n";
     return *this;
 }
@@ -136,7 +136,7 @@ Branch& Branch::operator+=(const Newspaper& paper) {
         cout << "Ошибка: филиал \"" << name << "\" переполнен.\n";
         return *this;
     }
-    newspapers.add(new Newspaper(paper));
+    newspapers.add(make_unique<Newspaper>(paper));
     cout << "Добавлено: [" << paper.getType() << "] \"" << paper.getTitle() << "\" в филиал \"" << name << "\".\n";
     return *this;
 }
@@ -146,7 +146,7 @@ Branch& Branch::operator+=(const Magazine& magazine) {
         cout << "Ошибка: филиал \"" << name << "\" переполнен.\n";
         return *this;
     }
-    magazines.add(new Magazine(magazine));
+    magazines.add(make_unique<Magazine>(magazine));
     cout << "Добавлено: [" << magazine.getType() << "] \"" << magazine.getTitle() << "\" в филиал \"" << name << "\".\n";
     return *this;
 }
