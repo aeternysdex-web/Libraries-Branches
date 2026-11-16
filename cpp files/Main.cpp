@@ -26,7 +26,7 @@ void showBranches(const Collection<Branch>& branches) {
     }
 }
 
-LibraryItem* findItem(Collection<Branch>& branches, int id) {
+LibraryItem* findItem(const Collection<Branch>& branches, int id) {
     for (int i = 0; i < branches.getCount(); ++i) {
         LibraryItem* item = branches.get(i)->findItemById(id);
         if (item != nullptr) return item;
@@ -34,19 +34,19 @@ LibraryItem* findItem(Collection<Branch>& branches, int id) {
     return nullptr;
 }
 
-Book* findBook(Collection<Branch>& branches, int id) {
+Book* findBook(const Collection<Branch>& branches, int id) {
     return dynamic_cast<Book*>(findItem(branches, id));
 }
 
-Newspaper* findNewspaper(Collection<Branch>& branches, int id) {
+Newspaper* findNewspaper(const Collection<Branch>& branches, int id) {
     return dynamic_cast<Newspaper*>(findItem(branches, id));
 }
 
-Magazine* findMagazine(Collection<Branch>& branches, int id) {
+Magazine* findMagazine(const Collection<Branch>& branches, int id) {
     return dynamic_cast<Magazine*>(findItem(branches, id));
 }
 
-void printFullInfo(Collection<Branch>& branches, int id) {
+void printFullInfo(const Collection<Branch>& branches, int id) {
     const LibraryItem* item = findItem(branches, id);
     if (item == nullptr) {
         cout << "Издание с таким ID не найдено.\n";
@@ -55,13 +55,13 @@ void printFullInfo(Collection<Branch>& branches, int id) {
     cout << "Тип: " << item->getType() << "\n" << *item;
 }
 
-void showItemInfo(Collection<Branch>& branches) {
+void showItemInfo(const Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
     printFullInfo(branches, id);
 }
 
-void addItem(Collection<Branch>& branches, int& nextId) {
+void addItem(const Collection<Branch>& branches, int& nextId) {
     cout << "Что добавить? 1 - книга, 2 - газета, 3 - журнал: ";
     int type = readNumber(cin);
     if (type < 1 || type > 3) {
@@ -99,7 +99,7 @@ void addItem(Collection<Branch>& branches, int& nextId) {
     nextId++;
 }
 
-void deleteItem(Collection<Branch>& branches) {
+void deleteItem(const Collection<Branch>& branches) {
     printBranches(branches);
     int choice = readInt("Из какого филиала удалить издание: ");
     if (choice < 1 || choice > branches.getCount()) {
@@ -142,7 +142,7 @@ void showLoanTerms(const Collection<Branch>& branches) {
     }
 }
 
-void useBookMethod(Collection<Branch>& branches) {
+void useBookMethod(const Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID книги: ");
     const Book* book = findBook(branches, id);
@@ -159,7 +159,7 @@ void useBookMethod(Collection<Branch>& branches) {
     }
 }
 
-void useNewspaperMethod(Collection<Branch>& branches) {
+void useNewspaperMethod(const Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID газеты: ");
     const Newspaper* paper = findNewspaper(branches, id);
@@ -175,7 +175,7 @@ void useNewspaperMethod(Collection<Branch>& branches) {
     }
 }
 
-void useMagazineMethod(Collection<Branch>& branches) {
+void useMagazineMethod(const Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID журнала: ");
     const Magazine* magazine = findMagazine(branches, id);
@@ -192,7 +192,7 @@ void useMagazineMethod(Collection<Branch>& branches) {
     }
 }
 
-void useInheritedSetter(Collection<Branch>& branches) {
+void useInheritedSetter(const Collection<Branch>& branches) {
     cout << "Изменение названия (setTitle() объявлен в LibraryItem и работает для любого издания).\n";
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
@@ -216,7 +216,7 @@ void printLossPayment(const LibraryItem& item) {
     cout << ">>> К оплате: " << pay << " руб.\n";
 }
 
-void payForLoss(Collection<Branch>& branches) {
+void payForLoss(const Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
     const LibraryItem* item = findItem(branches, id);
