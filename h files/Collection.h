@@ -4,15 +4,16 @@
 template <typename T>
 class Collection {
 private:
-    T** data;       
-    int count;      
-    int capacity;   
+    static constexpr int START_CAPACITY = 4;
 
-    static constexpr int START_CAPACITY = 4;  
-    void grow();    
+    T** data = new T* [START_CAPACITY];
+    int count = 0;
+    int capacity = START_CAPACITY;
+
+    void grow();
 
 public:
-    Collection();
+    Collection() = default;
     ~Collection();
 
     Collection(const Collection&) = delete;
@@ -31,10 +32,6 @@ public:
 };
 
 template <typename T>
-Collection<T>::Collection()
-    : data(new T* [START_CAPACITY]), count(0), capacity(START_CAPACITY) {}
-
-template <typename T>
 Collection<T>::~Collection() {
     for (int i = 0; i < count; ++i) {
         delete data[i];
@@ -45,7 +42,7 @@ Collection<T>::~Collection() {
 template <typename T>
 void Collection<T>::grow() {
     int newCapacity = capacity * 2;
-    T** newData = new T * [newCapacity];
+    auto newData = new T * [newCapacity];
     for (int i = 0; i < count; ++i) {
         newData[i] = data[i];
     }
@@ -56,7 +53,7 @@ void Collection<T>::grow() {
 
 template <typename T>
 bool Collection<T>::add(T* item) {
-    if (item == nullptr) return false;
+    if (item == nullptr || count < 0) return false;
     if (count == capacity) {
         grow();
     }
