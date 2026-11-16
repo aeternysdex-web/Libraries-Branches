@@ -55,10 +55,10 @@ bool Magazine::suitableFor(string_view audience) const {
 
 string Magazine::chooseAudience(istream& in) {
     Collection<string> audiences;
-    audiences.add(new string("дети"));
-    audiences.add(new string("подростки"));
-    audiences.add(new string("взрослые"));
-    audiences.add(new string("пенсионеры"));
+    audiences.add(make_unique<string>("дети"));
+    audiences.add(make_unique<string>("подростки"));
+    audiences.add(make_unique<string>("взрослые"));
+    audiences.add(make_unique<string>("пенсионеры"));
 
     cout << "Целевая аудитория:\n";
     audiences.print(cout);
