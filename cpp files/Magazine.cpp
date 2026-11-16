@@ -1,5 +1,5 @@
 #include "Magazine.h"
-#include <array>
+#include "Collection.h"
 using namespace std;
 
 Magazine::Magazine(int magId, const string& magTitle, int magYear,
@@ -15,19 +15,19 @@ string Magazine::getType() const { return "Журнал"; }
 int Magazine::getLoanDays() const { return 7; }
 
 void Magazine::printInfo(ostream& out) const {
-    LibraryItem::printInfo(out); 
+    LibraryItem::printInfo(out);
     out << "Тематика: " << topic << "\n";
     out << "Номер выпуска: " << issueNumber << "\n";
     out << "Целевая аудитория: " << targetAudience << "\n";
 }
 
 void Magazine::readFrom(istream& in) {
-    LibraryItem::readFrom(in); 
+    LibraryItem::readFrom(in);
     cout << "Тематика: ";
     getline(in, topic);
     cout << "Номер выпуска: ";
     issueNumber = readNumber(in);
-    targetAudience = chooseAudience(in); 
+    targetAudience = chooseAudience(in);
 }
 
 double Magazine::calculateLossCost(int currentYear, ostream& out) const {
@@ -54,16 +54,19 @@ bool Magazine::suitableFor(string_view audience) const {
 }
 
 string Magazine::chooseAudience(istream& in) {
-    const array<string, 4> audiences = { "дети", "подростки", "взрослые", "пенсионеры" };
+    Collection<string> audiences;
+    audiences.add(new string("дети"));
+    audiences.add(new string("подростки"));
+    audiences.add(new string("взрослые"));
+    audiences.add(new string("пенсионеры"));
+
     cout << "Целевая аудитория:\n";
-    for (int i = 0; i < 4; ++i) {
-        cout << "  " << i + 1 << ". " << audiences[i] << "\n";
-    }
+    audiences.print(cout);
     cout << "Выберите номер: ";
     int number = readNumber(in);
-    if (number < 1 || number > 4) {
-        cout << "Некорректный выбор, выбрано: " << audiences[2] << "\n";
+    if (number < 1 || number > audiences.getCount()) {
         number = 3;
+        cout << "Некорректный выбор, выбрано: " << *audiences.get(number - 1) << "\n";
     }
-    return audiences[number - 1];
+    return *audiences.get(number - 1);   
 }
