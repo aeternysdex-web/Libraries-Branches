@@ -26,8 +26,6 @@ private:
     int printAfterYear(const Collection<T>& list, const LibraryItem& ref) const;
     template <typename T>
     void printTerms(const Collection<T>& list) const;
-    template <typename T>
-    bool removeById(Collection<T>& list, int id);
 
 public:
     Branch(const std::string& branchName, int branchCapacity);
@@ -52,6 +50,10 @@ public:
     Branch& operator+=(const Newspaper& paper);
     Branch& operator+=(const Magazine& magazine);
     Branch& operator-=(int id);
-};
 
-std::ostream& operator<<(std::ostream& out, const Branch& branch);
+    friend std::ostream& operator<<(std::ostream& out, const Branch& branch) {
+        out << branch.name << " (изданий: " << branch.getItemsCount()
+            << "/" << branch.capacity << ")";
+        return out;
+    }
+};
