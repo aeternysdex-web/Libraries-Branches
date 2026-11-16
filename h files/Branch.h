@@ -1,8 +1,8 @@
 #pragma once
-#include <memory>
+#include <iostream>
 #include <string>
-#include <vector>
 #include "Book.h"
+#include "Collection.h"
 #include "LibraryItem.h"
 #include "Magazine.h"
 #include "Newspaper.h"
@@ -11,9 +11,23 @@ class Branch {
 private:
     std::string name;
     int capacity;
-    std::vector<std::unique_ptr<LibraryItem>> items;
+
+    Collection<Book> books;
+    Collection<Newspaper> newspapers;
+    Collection<Magazine> magazines;
 
     void printLine(const LibraryItem& item) const;
+
+    template <typename T>
+    void printList(const Collection<T>& list) const;
+    template <typename T>
+    int printUpToYear(const Collection<T>& list, const LibraryItem& ref) const;
+    template <typename T>
+    int printAfterYear(const Collection<T>& list, const LibraryItem& ref) const;
+    template <typename T>
+    void printTerms(const Collection<T>& list) const;
+    template <typename T>
+    bool removeById(Collection<T>& list, int id);
 
 public:
     Branch(const std::string& branchName, int branchCapacity);
@@ -25,8 +39,11 @@ public:
     int getCapacity() const;
     int getItemsCount() const;
 
+    const Collection<Book>& getBooks() const;
+    const Collection<Newspaper>& getNewspapers() const;
+    const Collection<Magazine>& getMagazines() const;
+
     void printCatalog() const;
-    void printShort() const;
     int printItemsUpToYear(const LibraryItem& ref) const;
     int printItemsAfterYear(const LibraryItem& ref) const;
     void printLoanTerms() const;
@@ -36,3 +53,5 @@ public:
     Branch& operator+=(const Magazine& magazine);
     Branch& operator-=(int id);
 };
+
+std::ostream& operator<<(std::ostream& out, const Branch& branch);
