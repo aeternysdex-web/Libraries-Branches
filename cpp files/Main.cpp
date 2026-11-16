@@ -294,8 +294,8 @@ int main() {
     cout << fixed << setprecision(2);
 
     Collection<Branch> branches;
-    branches.add(new Branch("Филиал №1", 10));
-    branches.add(new Branch("Филиал №2", 10));
+    branches.add(make_unique<Branch>("Филиал №1", 10));
+    branches.add(make_unique<Branch>("Филиал №2", 10));
     Branch& first = *branches.get(0);
     Branch& second = *branches.get(1);
 
