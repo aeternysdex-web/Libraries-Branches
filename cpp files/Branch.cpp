@@ -8,6 +8,17 @@ namespace {
         int index = list.findIndex([id](const T& item) { return item.getId() == id; });
         return list.get(index);
     }
+
+    template <typename T>
+    bool removeById(Collection<T>& list, int id, const string& branchName) {
+        int index = list.findIndex([id](const T& item) { return item.getId() == id; });
+        if (index == -1) return false;
+
+        const LibraryItem* item = list.get(index);
+        cout << "Удалено: [" << item->getType() << "] \"" << item->getTitle()
+            << "\" из филиала \"" << branchName << "\".\n";
+        return list.removeAt(index);
+    }
 }
 
 Branch::Branch(const string& branchName, int branchCapacity)
@@ -61,17 +72,6 @@ void Branch::printTerms(const Collection<T>& list) const {
         cout << name << ": [" << item.getType() << "] \"" << item.getTitle()
             << "\" - срок выдачи " << item.getLoanDays() << " дн.\n";
     }
-}
-
-template <typename T>
-bool Branch::removeById(Collection<T>& list, int id) {
-    int index = list.findIndex([id](const T& item) { return item.getId() == id; });
-    if (index == -1) return false;
-
-    const LibraryItem* item = list.get(index);
-    cout << "Удалено: [" << item->getType() << "] \"" << item->getTitle()
-        << "\" из филиала \"" << name << "\".\n";
-    return list.removeAt(index);
 }
 
 
@@ -152,15 +152,9 @@ Branch& Branch::operator+=(const Magazine& magazine) {
 }
 
 Branch& Branch::operator-=(int id) {
-    if (removeById(books, id) || removeById(newspapers, id) || removeById(magazines, id)) {
+    if (removeById(books, id, name) || removeById(newspapers, id, name) || removeById(magazines, id, name)) {
         return *this;
     }
     cout << "Ошибка: такого издания нет в филиале \"" << name << "\".\n";
     return *this;
-}
-
-ostream& operator<<(ostream& out, const Branch& branch) {
-    out << branch.getName() << " (изданий: " << branch.getItemsCount()
-        << "/" << branch.getCapacity() << ")";
-    return out;
 }
