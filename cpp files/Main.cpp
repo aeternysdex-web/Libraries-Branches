@@ -1,9 +1,9 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
-#include <vector>
 #include "Book.h"
 #include "Branch.h"
+#include "Collection.h"
 #include "LibraryItem.h"
 #include "Magazine.h"
 #include "Newspaper.h"
@@ -16,40 +16,37 @@ int readInt(const string& prompt) {
     return readNumber(cin);
 }
 
-void printBranches(const vector<Branch>& branches) {
-    for (size_t i = 0; i < branches.size(); ++i) {
-        cout << i + 1 << ". ";
-        branches[i].printShort();
+void printBranches(const Collection<Branch>& branches) {
+    branches.print(cout); 
+}
+
+void showBranches(const Collection<Branch>& branches) {
+    for (int i = 0; i < branches.getCount(); ++i) {
+        branches.get(i)->printCatalog();
     }
 }
 
-void showBranches(const vector<Branch>& branches) {
-    for (const Branch& branch : branches) {
-        branch.printCatalog();
-    }
-}
-
-LibraryItem* findItem(vector<Branch>& branches, int id) {
-    for (Branch& branch : branches) {
-        LibraryItem* item = branch.findItemById(id);
+LibraryItem* findItem(Collection<Branch>& branches, int id) {
+    for (int i = 0; i < branches.getCount(); ++i) {
+        LibraryItem* item = branches.get(i)->findItemById(id);
         if (item != nullptr) return item;
     }
     return nullptr;
 }
 
-Book* findBook(vector<Branch>& branches, int id) {
+Book* findBook(Collection<Branch>& branches, int id) {
     return dynamic_cast<Book*>(findItem(branches, id));
 }
 
-Newspaper* findNewspaper(vector<Branch>& branches, int id) {
+Newspaper* findNewspaper(Collection<Branch>& branches, int id) {
     return dynamic_cast<Newspaper*>(findItem(branches, id));
 }
 
-Magazine* findMagazine(vector<Branch>& branches, int id) {
+Magazine* findMagazine(Collection<Branch>& branches, int id) {
     return dynamic_cast<Magazine*>(findItem(branches, id));
 }
 
-void printFullInfo(vector<Branch>& branches, int id) {
+void printFullInfo(Collection<Branch>& branches, int id) {
     const LibraryItem* item = findItem(branches, id);
     if (item == nullptr) {
         cout << "Издание с таким ID не найдено.\n";
@@ -58,13 +55,13 @@ void printFullInfo(vector<Branch>& branches, int id) {
     cout << "Тип: " << item->getType() << "\n" << *item;
 }
 
-void showItemInfo(vector<Branch>& branches) {
+void showItemInfo(Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
     printFullInfo(branches, id);
 }
 
-void addItem(vector<Branch>& branches, int& nextId) {
+void addItem(Collection<Branch>& branches, int& nextId) {
     cout << "Что добавить? 1 - книга, 2 - газета, 3 - журнал: ";
     int type = readNumber(cin);
     if (type < 1 || type > 3) {
@@ -74,78 +71,78 @@ void addItem(vector<Branch>& branches, int& nextId) {
     cout << "В какой филиал добавить?\n";
     printBranches(branches);
     int choice = readInt("Номер филиала: ");
-    if (choice < 1 || choice > static_cast<int>(branches.size())) {
+    if (choice < 1 || choice > branches.getCount()) {
         cout << "Некорректный номер.\n";
         return;
     }
-    int index = choice - 1;
-    if (branches[index].isFull()) {
-        cout << "Филиал \"" << branches[index].getName() << "\" переполнен.\n";
+    Branch& branch = *branches.get(choice - 1);
+    if (branch.isFull()) {
+        cout << "Филиал \"" << branch.getName() << "\" переполнен.\n";
         return;
     }
 
     if (type == 1) {
         Book book(nextId, "", 0, "", "", 0);
         cin >> book;
-        branches[index] += book;
+        branch += book;
     }
     else if (type == 2) {
         Newspaper paper(nextId, "", 0, 0, 0, "");
         cin >> paper;
-        branches[index] += paper;
+        branch += paper;
     }
     else {
         Magazine magazine(nextId, "", 0, "", 0, "");
         cin >> magazine;
-        branches[index] += magazine;
+        branch += magazine;
     }
     nextId++;
 }
 
-void deleteItem(vector<Branch>& branches) {
+void deleteItem(Collection<Branch>& branches) {
     printBranches(branches);
     int choice = readInt("Из какого филиала удалить издание: ");
-    if (choice < 1 || choice > static_cast<int>(branches.size())) {
+    if (choice < 1 || choice > branches.getCount()) {
         cout << "Некорректный номер.\n";
         return;
     }
-    int index = choice - 1;
-    branches[index].printCatalog();
+    Branch& branch = *branches.get(choice - 1);
+    branch.printCatalog();
     int id = readInt("Введите ID издания для удаления: ");
-    branches[index] -= id;
+    branch -= id;
 }
 
-void showUpToYear(const vector<Branch>& branches) {
+void showUpToYear(const Collection<Branch>& branches) {
     int year = readInt("Введите год: ");
     Book ref(0, "", year, "", "", 0);
     int total = 0;
-    for (const Branch& branch : branches) {
-        total += branch.printItemsUpToYear(ref);
+    for (int i = 0; i < branches.getCount(); ++i) {
+        total += branches.get(i)->printItemsUpToYear(ref);
     }
     if (total == 0) {
         cout << "Таких изданий нет.\n";
     }
 }
 
-void showAfterYear(const vector<Branch>& branches) {
+void showAfterYear(const Collection<Branch>& branches) {
     int year = readInt("Введите год: ");
     Book ref(0, "", year, "", "", 0);
     int total = 0;
-    for (const Branch& branch : branches) {
-        total += branch.printItemsAfterYear(ref);
+    for (int i = 0; i < branches.getCount(); ++i) {
+        total += branches.get(i)->printItemsAfterYear(ref);
     }
     if (total == 0) {
         cout << "Таких изданий нет.\n";
     }
 }
 
-void showLoanTerms(const vector<Branch>& branches) {
-    for (const Branch& branch : branches) {
-        branch.printLoanTerms();
+void showLoanTerms(const Collection<Branch>& branches) {
+    for (int i = 0; i < branches.getCount(); ++i) {
+        branches.get(i)->printLoanTerms();
     }
 }
 
-void useBookMethod(vector<Branch>& branches) {
+void useBookMethod(Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID книги: ");
     const Book* book = findBook(branches, id);
@@ -162,7 +159,7 @@ void useBookMethod(vector<Branch>& branches) {
     }
 }
 
-void useNewspaperMethod(vector<Branch>& branches) {
+void useNewspaperMethod(Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID газеты: ");
     const Newspaper* paper = findNewspaper(branches, id);
@@ -178,7 +175,7 @@ void useNewspaperMethod(vector<Branch>& branches) {
     }
 }
 
-void useMagazineMethod(vector<Branch>& branches) {
+void useMagazineMethod(Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID журнала: ");
     const Magazine* magazine = findMagazine(branches, id);
@@ -195,7 +192,7 @@ void useMagazineMethod(vector<Branch>& branches) {
     }
 }
 
-void useInheritedSetter(vector<Branch>& branches) {
+void useInheritedSetter(Collection<Branch>& branches) {
     cout << "Изменение названия (setTitle() объявлен в LibraryItem и работает для любого издания).\n";
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
@@ -219,7 +216,7 @@ void printLossPayment(const LibraryItem& item) {
     cout << ">>> К оплате: " << pay << " руб.\n";
 }
 
-void payForLoss(vector<Branch>& branches) {
+void payForLoss(Collection<Branch>& branches) {
     showBranches(branches);
     int id = readInt("Введите ID издания: ");
     const LibraryItem* item = findItem(branches, id);
@@ -228,6 +225,48 @@ void payForLoss(vector<Branch>& branches) {
         return;
     }
     printLossPayment(*item);
+}
+
+
+void showBooksToFinish(const Collection<Branch>& branches) {
+    int pages = readInt("Сколько страниц в день читает читатель: ");
+    int total = 0;
+    for (int i = 0; i < branches.getCount(); ++i) {
+        const Branch& branch = *branches.get(i);
+        cout << "--- " << branch.getName() << " ---\n";
+        total += printIf(branch.getBooks(),
+            [pages](const Book& book) { return book.canFinishInLoanPeriod(pages); }, cout);
+    }
+    if (total == 0) {
+        cout << "Таких книг нет.\n";
+    }
+}
+
+void showNewspapersToTakeHome(const Collection<Branch>& branches) {
+    int total = 0;
+    for (int i = 0; i < branches.getCount(); ++i) {
+        const Branch& branch = *branches.get(i);
+        cout << "--- " << branch.getName() << " ---\n";
+        total += printIf(branch.getNewspapers(),
+            [](const Newspaper& paper) { return paper.canTakeHome(CURRENT_YEAR); }, cout);
+    }
+    if (total == 0) {
+        cout << "Таких газет нет.\n";
+    }
+}
+
+void showMagazinesForAudience(const Collection<Branch>& branches) {
+    string audience = Magazine::chooseAudience(cin);
+    int total = 0;
+    for (int i = 0; i < branches.getCount(); ++i) {
+        const Branch& branch = *branches.get(i);
+        cout << "--- " << branch.getName() << " ---\n";
+        total += printIf(branch.getMagazines(),
+            [&audience](const Magazine& magazine) { return magazine.suitableFor(audience); }, cout);
+    }
+    if (total == 0) {
+        cout << "Таких журналов нет.\n";
+    }
 }
 
 void printMenu() {
@@ -244,6 +283,9 @@ void printMenu() {
     cout << "10. Журнал: подходит ли аудитории\n";
     cout << "11. Изменить название издания\n";
     cout << "12. Выплата за утерю издания\n";
+    cout << "13. Все книги, которые читатель успеет дочитать\n";
+    cout << "14. Все газеты, которые можно взять домой\n";
+    cout << "15. Все журналы для выбранной аудитории\n";
     cout << "0. Выход\n";
     cout << "=====================================\n";
 }
@@ -251,28 +293,30 @@ void printMenu() {
 int main() {
     cout << fixed << setprecision(2);
 
-    vector<Branch> branches;
-    branches.emplace_back("Филиал №1", 10);
-    branches.emplace_back("Филиал №2", 10);
+    Collection<Branch> branches;
+    branches.add(new Branch("Филиал №1", 10));
+    branches.add(new Branch("Филиал №2", 10));
+    Branch& first = *branches.get(0);
+    Branch& second = *branches.get(1);
 
     int nextId = 1;
-    branches[0] += Book(nextId++, "Война и мир", 1869, "Л.Н. Толстой", "Роман", 1225);
-    branches[0] += Book(nextId++, "Мастер и Маргарита", 1967, "М.А. Булгаков", "Роман", 480);
-    branches[0] += Book(nextId++, "Евгений Онегин", 1833, "А.С. Пушкин", "Роман в стихах", 224);
-    branches[0] += Book(nextId++, "Тихий Дон", 1940, "М.А. Шолохов", "Роман", 1240);
-    branches[0] += Newspaper(nextId++, "Звязда", 2026, 210, 25000, "Издательский дом «Звязда»");
-    branches[0] += Newspaper(nextId++, "Минский листок", 1895, 12, 300, "Редакция «Минского листка»");
-    branches[0] += Magazine(nextId++, "Мурзилка", 1924, "Детская литература", 1, "дети");
-    branches[0] += Magazine(nextId++, "Юность", 1975, "Литература", 12, "подростки");
+    first += Book(nextId++, "Война и мир", 1869, "Л.Н. Толстой", "Роман", 1225);
+    first += Book(nextId++, "Мастер и Маргарита", 1967, "М.А. Булгаков", "Роман", 480);
+    first += Book(nextId++, "Евгений Онегин", 1833, "А.С. Пушкин", "Роман в стихах", 224);
+    first += Book(nextId++, "Тихий Дон", 1940, "М.А. Шолохов", "Роман", 1240);
+    first += Newspaper(nextId++, "Звязда", 2026, 210, 25000, "Издательский дом «Звязда»");
+    first += Newspaper(nextId++, "Минский листок", 1895, 12, 300, "Редакция «Минского листка»");
+    first += Magazine(nextId++, "Мурзилка", 1924, "Детская литература", 1, "дети");
+    first += Magazine(nextId++, "Юность", 1975, "Литература", 12, "подростки");
 
-    branches[1] += Book(nextId++, "Анна Каренина", 1877, "Л.Н. Толстой", "Роман", 864);
-    branches[1] += Book(nextId++, "Воскресение", 1899, "Л.Н. Толстой", "Роман", 480);
-    branches[1] += Book(nextId++, "Маленький принц", 1943, "А. де Сент-Экзюпери", "Сказка", 96);
-    branches[1] += Magazine(nextId++, "Наука и жизнь", 2025, "Наука", 7, "взрослые");
-    branches[1] += Magazine(nextId++, "Здоровье", 2023, "Медицина", 1, "пенсионеры");
-    branches[1] += Newspaper(nextId++, "Советская Беларусь", 2025, 99, 80000, "Редакция СБ");
-    branches[1] += Newspaper(nextId++, "Вечерний Минск", 2024, 45, 500, "Редакция «Вечернего Минска»");
-    branches[1] += Newspaper(nextId++, "Знамя юности", 1968, 134, 150000, "Редакция «Знамя юности»");
+    second += Book(nextId++, "Анна Каренина", 1877, "Л.Н. Толстой", "Роман", 864);
+    second += Book(nextId++, "Воскресение", 1899, "Л.Н. Толстой", "Роман", 480);
+    second += Book(nextId++, "Маленький принц", 1943, "А. де Сент-Экзюпери", "Сказка", 96);
+    second += Magazine(nextId++, "Наука и жизнь", 2025, "Наука", 7, "взрослые");
+    second += Magazine(nextId++, "Здоровье", 2023, "Медицина", 1, "пенсионеры");
+    second += Newspaper(nextId++, "Советская Беларусь", 2025, 99, 80000, "Редакция СБ");
+    second += Newspaper(nextId++, "Вечерний Минск", 2024, 45, 500, "Редакция «Вечернего Минска»");
+    second += Newspaper(nextId++, "Знамя юности", 1968, 134, 150000, "Редакция «Знамя юности»");
 
     int choice;
     do {
@@ -291,6 +335,9 @@ int main() {
         case 10: useMagazineMethod(branches); break;
         case 11: useInheritedSetter(branches); break;
         case 12: payForLoss(branches); break;
+        case 13: showBooksToFinish(branches); break;
+        case 14: showNewspapersToTakeHome(branches); break;
+        case 15: showMagazinesForAudience(branches); break;
         case 0: cout << "Завершение работы.\n"; break;
         default: cout << "Такого пункта меню нет.\n";
         }
