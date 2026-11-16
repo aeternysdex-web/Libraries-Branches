@@ -1,14 +1,15 @@
 #pragma once
+#include <cstddef>
 #include <iostream>
 
 template <typename T>
 class Collection {
 private:
-    static constexpr int START_CAPACITY = 4;
+    static constexpr std::size_t START_CAPACITY = 4;
 
     T** data = new T* [START_CAPACITY];
-    int count = 0;
-    int capacity = START_CAPACITY;
+    std::size_t count = 0;
+    std::size_t capacity = START_CAPACITY;
 
     void grow();
 
@@ -19,21 +20,21 @@ public:
     Collection(const Collection&) = delete;
     Collection& operator=(const Collection&) = delete;
 
-    bool add(T* item);                
-    bool removeAt(int index);         
-    T* get(int index) const;    
+    bool add(T* item);
+    bool removeAt(int index);
+    T* get(int index) const;
 
     template <typename Predicate>
     int findIndex(Predicate pred) const;
 
-    int getCount() const;           
-    void clear();                    
-    void print(std::ostream& out) const;  
+    int getCount() const;
+    void clear();
+    void print(std::ostream& out) const;
 };
 
 template <typename T>
 Collection<T>::~Collection() {
-    for (int i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < count; ++i) {
         delete data[i];
     }
     delete[] data;
@@ -41,9 +42,9 @@ Collection<T>::~Collection() {
 
 template <typename T>
 void Collection<T>::grow() {
-    int newCapacity = capacity * 2;
+    std::size_t newCapacity = capacity * 2;
     auto newData = new T * [newCapacity];
-    for (int i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < count; ++i) {
         newData[i] = data[i];
     }
     delete[] data;
@@ -53,7 +54,7 @@ void Collection<T>::grow() {
 
 template <typename T>
 bool Collection<T>::add(T* item) {
-    if (item == nullptr || count < 0) return false;
+    if (item == nullptr) return false;
     if (count == capacity) {
         grow();
     }
@@ -64,9 +65,10 @@ bool Collection<T>::add(T* item) {
 
 template <typename T>
 bool Collection<T>::removeAt(int index) {
-    if (index < 0 || index >= count) return false;
-    delete data[index];                       
-    for (int i = index; i < count - 1; ++i) { 
+    if (index < 0 || static_cast<std::size_t>(index) >= count) return false;
+    auto position = static_cast<std::size_t>(index);
+    delete data[position];
+    for (std::size_t i = position; i + 1 < count; ++i) {
         data[i] = data[i + 1];
     }
     --count;
@@ -75,25 +77,25 @@ bool Collection<T>::removeAt(int index) {
 
 template <typename T>
 T* Collection<T>::get(int index) const {
-    if (index < 0 || index >= count) return nullptr;
+    if (index < 0 || static_cast<std::size_t>(index) >= count) return nullptr;
     return data[index];
 }
 
 template <typename T>
 template <typename Predicate>
 int Collection<T>::findIndex(Predicate pred) const {
-    for (int i = 0; i < count; ++i) {
-        if (pred(*data[i])) return i;
+    for (std::size_t i = 0; i < count; ++i) {
+        if (pred(*data[i])) return static_cast<int>(i);
     }
     return -1;
 }
 
 template <typename T>
-int Collection<T>::getCount() const { return count; }
+int Collection<T>::getCount() const { return static_cast<int>(count); }
 
 template <typename T>
 void Collection<T>::clear() {
-    for (int i = 0; i < count; ++i) {
+    for (std::size_t i = 0; i < count; ++i) {
         delete data[i];
     }
     delete[] data;
@@ -108,8 +110,8 @@ void Collection<T>::print(std::ostream& out) const {
         out << "(коллекция пуста)\n";
         return;
     }
-    for (int i = 0; i < count; ++i) {
-        out << i + 1 << ". " << *data[i] << "\n";  
+    for (std::size_t i = 0; i < count; ++i) {
+        out << i + 1 << ". " << *data[i] << "\n";
     }
 }
 
