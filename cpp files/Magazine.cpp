@@ -2,6 +2,7 @@
 #include "InvalidDataException.h"
 #include "OutOfRangeException.h"
 #include "Collection.h"
+#include <format>
 using namespace std;
 
 Magazine::Magazine(int magId, const string& magTitle, int magYear,
@@ -73,8 +74,7 @@ string Magazine::chooseAudience(istream& in) {
     cout << "Выберите номер: ";
     int number = readNumber(in);
     if (number < 1 || number > audiences.getCount()) {
-        throw OutOfRangeException("номер аудитории " + to_string(number)
-            + " вне диапазона 1.." + to_string(audiences.getCount()));
+        throw OutOfRangeException(format("номер аудитории {} вне диапазона 1..{}", number, audiences.getCount()));
     }
     return *audiences.get(number - 1);
 }
