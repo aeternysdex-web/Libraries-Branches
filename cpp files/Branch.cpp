@@ -5,6 +5,7 @@
 #include "ObjectNotFoundException.h"
 #include "InvalidOperationException.h"
 #include <iostream>
+#include <format>
 using namespace std;
 
 namespace {
@@ -131,12 +132,10 @@ void Branch::printLoanTerms() const {
 
 Branch& Branch::operator+=(const Book& book) {
     if (isFull()) {
-        throw LimitExceededException("филиал \"" + name + "\" переполнен ("
-            + to_string(getItemsCount()) + "/" + to_string(capacity) + ")");
+        throw LimitExceededException(format("филиал \"{}\" переполнен ({}/{})", name, getItemsCount(), capacity));
     }
     if (findItemById(book.getId()) != nullptr) {
-        throw DuplicateException("издание с ID " + to_string(book.getId())
-            + " уже есть в филиале \"" + name + "\"");
+        throw DuplicateException(format("издание с ID {} уже есть в филиале \"{}\"", book.getId(), name));
     }
     books.add(make_unique<Book>(book));
     cout << "Добавлено: [" << book.getType() << "] \"" << book.getTitle() << "\" в филиал \"" << name << "\".\n";
@@ -145,12 +144,10 @@ Branch& Branch::operator+=(const Book& book) {
 
 Branch& Branch::operator+=(const Newspaper& paper) {
     if (isFull()) {
-        throw LimitExceededException("филиал \"" + name + "\" переполнен ("
-            + to_string(getItemsCount()) + "/" + to_string(capacity) + ")");
+        throw LimitExceededException(format("филиал \"{}\" переполнен ({}/{})", name, getItemsCount(), capacity));
     }
     if (findItemById(paper.getId()) != nullptr) {
-        throw DuplicateException("издание с ID " + to_string(paper.getId())
-            + " уже есть в филиале \"" + name + "\"");
+        throw DuplicateException(format("издание с ID {} уже есть в филиале \"{}\"", paper.getId(), name));
     }
     newspapers.add(make_unique<Newspaper>(paper));
     cout << "Добавлено: [" << paper.getType() << "] \"" << paper.getTitle() << "\" в филиал \"" << name << "\".\n";
@@ -159,12 +156,10 @@ Branch& Branch::operator+=(const Newspaper& paper) {
 
 Branch& Branch::operator+=(const Magazine& magazine) {
     if (isFull()) {
-        throw LimitExceededException("филиал \"" + name + "\" переполнен ("
-            + to_string(getItemsCount()) + "/" + to_string(capacity) + ")");
+        throw LimitExceededException(format("филиал \"{}\" переполнен ({}/{})", name, getItemsCount(), capacity));
     }
     if (findItemById(magazine.getId()) != nullptr) {
-        throw DuplicateException("издание с ID " + to_string(magazine.getId())
-            + " уже есть в филиале \"" + name + "\"");
+        throw DuplicateException(format("издание с ID {} уже есть в филиале \"{}\"", magazine.getId(), name));
     }
     magazines.add(make_unique<Magazine>(magazine));
     cout << "Добавлено: [" << magazine.getType() << "] \"" << magazine.getTitle() << "\" в филиал \"" << name << "\".\n";
@@ -173,10 +168,10 @@ Branch& Branch::operator+=(const Magazine& magazine) {
 
 Branch& Branch::operator-=(int id) {
     if (getItemsCount() == 0) {
-        throw InvalidOperationException("нельзя удалить издание: филиал \"" + name + "\" пуст");
+        throw InvalidOperationException(format("нельзя удалить издание: филиал \"{}\" пуст", name));
     }
     if (removeById(books, id, name) || removeById(newspapers, id, name) || removeById(magazines, id, name)) {
         return *this;
     }
-    throw ObjectNotFoundException("издание с ID " + to_string(id) + " не найдено в филиале \"" + name + "\"");
+    throw ObjectNotFoundException(format("издание с ID {} не найдено в филиале \"{}\"", id, name));
 }
