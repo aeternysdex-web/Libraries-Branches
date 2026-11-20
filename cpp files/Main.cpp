@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <format>
 #include <iostream>
 #include <string>
 #include "Book.h"
@@ -57,7 +58,7 @@ Magazine* findMagazine(const Collection<Branch>& branches, int id) {
 void printFullInfo(const Collection<Branch>& branches, int id) {
     const LibraryItem* item = findItem(branches, id);
     if (item == nullptr) {
-        throw ObjectNotFoundException("издание с ID " + to_string(id) + " не найдено");
+        throw ObjectNotFoundException(format("издание с ID {} не найдено", id));
     }
     cout << "Тип: " << item->getType() << "\n" << *item;
 }
@@ -72,14 +73,13 @@ void addItem(const Collection<Branch>& branches) {
     cout << "Что добавить? 1 - книга, 2 - газета, 3 - журнал: ";
     int type = readNumber(cin);
     if (type < 1 || type > 3) {
-        throw OutOfRangeException("тип издания " + to_string(type) + " вне диапазона 1..3");
+        throw OutOfRangeException(format("тип издания {} вне диапазона 1..3", type));
     }
     cout << "В какой филиал добавить?\n";
     printBranches(branches);
     int choice = readInt("Номер филиала: ");
     if (choice < 1 || choice > branches.getCount()) {
-        throw OutOfRangeException("номер филиала " + to_string(choice)
-            + " вне диапазона 1.." + to_string(branches.getCount()));
+        throw OutOfRangeException(format("номер филиала {} вне диапазона 1..{}", choice, branches.getCount()));
     }
     Branch& branch = *branches.get(choice - 1);
 
@@ -88,7 +88,7 @@ void addItem(const Collection<Branch>& branches) {
         throw InvalidDataException("ID должен быть больше 0");
     }
     if (findItem(branches, id) != nullptr) {
-        throw DuplicateException("издание с ID " + to_string(id) + " уже есть в сети");
+        throw DuplicateException(format("издание с ID {} уже есть в сети", id));
     }
 
     if (type == 1) {
@@ -112,8 +112,7 @@ void deleteItem(const Collection<Branch>& branches) {
     printBranches(branches);
     int choice = readInt("Из какого филиала удалить издание: ");
     if (choice < 1 || choice > branches.getCount()) {
-        throw OutOfRangeException("номер филиала " + to_string(choice)
-            + " вне диапазона 1.." + to_string(branches.getCount()));
+        throw OutOfRangeException(format("номер филиала {} вне диапазона 1..{}", choice, branches.getCount()));
     }
     Branch& branch = *branches.get(choice - 1);
     branch.printCatalog();
@@ -156,7 +155,7 @@ void useBookMethod(const Collection<Branch>& branches) {
     int id = readInt("Введите ID книги: ");
     const Book* book = findBook(branches, id);
     if (book == nullptr) {
-        throw ObjectNotFoundException("книга с ID " + to_string(id) + " не найдена");
+        throw ObjectNotFoundException(format("книга с ID {} не найдена", id));
     }
     int pages = readInt("Сколько страниц в день читает читатель: ");
     if (book->canFinishInLoanPeriod(pages)) {
@@ -172,7 +171,7 @@ void useNewspaperMethod(const Collection<Branch>& branches) {
     int id = readInt("Введите ID газеты: ");
     const Newspaper* paper = findNewspaper(branches, id);
     if (paper == nullptr) {
-        throw ObjectNotFoundException("газета с ID " + to_string(id) + " не найдена");
+        throw ObjectNotFoundException(format("газета с ID {} не найдена", id));
     }
     if (paper->canTakeHome(CURRENT_YEAR)) {
         cout << "Номер можно взять домой.\n";
@@ -187,7 +186,7 @@ void useMagazineMethod(const Collection<Branch>& branches) {
     int id = readInt("Введите ID журнала: ");
     const Magazine* magazine = findMagazine(branches, id);
     if (magazine == nullptr) {
-        throw ObjectNotFoundException("журнал с ID " + to_string(id) + " не найден");
+        throw ObjectNotFoundException(format("журнал с ID {} не найден", id));
     }
     string audience = Magazine::chooseAudience(cin); // выбор из 4 вариантов
     if (magazine->suitableFor(audience)) {
@@ -204,7 +203,7 @@ void useInheritedSetter(const Collection<Branch>& branches) {
     int id = readInt("Введите ID издания: ");
     LibraryItem* item = findItem(branches, id);
     if (item == nullptr) {
-        throw ObjectNotFoundException("издание с ID " + to_string(id) + " не найдено");
+        throw ObjectNotFoundException(format("издание с ID {} не найдено", id));
     }
     cout << "Новое название: ";
     string title;
@@ -226,7 +225,7 @@ void payForLoss(const Collection<Branch>& branches) {
     int id = readInt("Введите ID издания: ");
     const LibraryItem* item = findItem(branches, id);
     if (item == nullptr) {
-        throw ObjectNotFoundException("издание с ID " + to_string(id) + " не найдено");
+        throw ObjectNotFoundException(format("издание с ID {} не найдено", id));
     }
     printLossPayment(*item);
 }
@@ -277,13 +276,11 @@ void deleteBranch(Collection<Branch>& branches) {
     printBranches(branches);
     int choice = readInt("Какой филиал удалить: ");
     if (choice < 1 || choice > branches.getCount()) {
-        throw OutOfRangeException("номер филиала " + to_string(choice)
-            + " вне диапазона 1.." + to_string(branches.getCount()));
+        throw OutOfRangeException(format("номер филиала {} вне диапазона 1..{}", choice, branches.getCount()));
     }
     const Branch& branch = *branches.get(choice - 1);
     if (branch.getItemsCount() > 0) {
-        throw RelationException("нельзя удалить филиал \"" + branch.getName()
-            + "\", в нём ещё " + to_string(branch.getItemsCount()) + " изданий");
+        throw RelationException(format("нельзя удалить филиал \"{}\", в нём ещё {} изданий", branch.getName(), branch.getItemsCount()));
     }
     cout << "Филиал \"" << branch.getName() << "\" удалён.\n";
     branches.removeAt(choice - 1);
@@ -321,7 +318,6 @@ int main() {
 
     Branch& first = *branches.get(0);
     Branch& second = *branches.get(1);
-    Branch& third = *branches.get(2);
 
     int nextId = 1;
     first += Book(nextId++, "Война и мир", 1869, "Л.Н. Толстой", "Роман", 1225);
